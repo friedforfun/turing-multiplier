@@ -10,7 +10,7 @@ class TuringMachine {
     _states = newStates
   }
   def addState(s : String): Unit = {
-    this.states :+ s
+    this.states = this.states :+ s
   }
 
   def symbols = _symbols
@@ -19,7 +19,7 @@ class TuringMachine {
   }
 
   def addSymbol(sy : Char): Unit = {
-    this.symbols :+ sy
+    this.symbols = this.symbols :+ sy
   }
 
   def transitions = _transitions
