@@ -1,42 +1,58 @@
 package AbstractTM
-import Array._
 
-class TuringMachine() {
-  private var _state: Array[String] = Array()
-  private var _symbol: Array[Symbol] = Array()
+class TuringMachine {
+  private var _states: Array[String] = Array()
+  private var _symbols: Array[Char] = Array()
+  private var _transitions: Array[Transition] = Array()
 
-  def state = _state
-  def state_=(newState: Array[String]): Unit ={
-    _state = concat(_state, newState)
+  def states = _states
+  def states_=(newStates: Array[String]): Unit ={
+    _states = newStates
+  }
+  def addState(s : String): Unit = {
+    this.states :+ s
   }
 
-  def symbol = _symbol
-  def symbol_=(newSymbol: Array[Symbol]): Unit = {
-    _symbol = concat(_symbol, newSymbol)
+  def symbols = _symbols
+  def symbols_=(newSymbols: Array[Char]): Unit = {
+    _symbols = newSymbols
   }
 
-  def addState{}
+  def addSymbol(sy : Char): Unit = {
+    this.symbols :+ sy
+  }
 
-  def storeTransition(st0 : String, sy0 : Char, st1 : String, sy1 : Char, move : Char){}
+  def transitions = _transitions
+  def transitions_=(newTransitions: Array[Transition]): Unit ={
+    _transitions = newTransitions
+  }
+  def addTransition(st0 : String, sy0 : Char, st1 : String, sy1 : Char, m : Char): Unit = {
+    val t : Transition = new Transition(st0, sy0, st1, sy1, m)
+    this.transitions :+ t
+  }
 
+class Transition(st0 : String, sy0 : Char, st1 : String, sy1 : Char, m : Char){
+  private val acceptedMoves : List[Char] = List('R', 'L', '0')
+  private val _state0 = st0
+  private val _symbol0 = sy0
+  private val _state1 = st1
+  private val _symbol1 = sy1
+  private val _move = if (acceptedMoves contains m) m else println("Invalid move value in: "+this.toString)
 
-class Symbol (x: Char){
-  private val _sym = x
-  def symbol= _sym
-}
+  private val _rule = (state0, symbol0)
+  private val _result = (state1, symbol1, move)
+  private val _definition = (state0, symbol0, state1, symbol1, move)
 
-class State(x: String){
-  private val _state = x
-  def state = _state
-}
+  override def toString: String = s"($state0, $symbol0, $state1, $symbol1, $move)"
+  def state0 = _state0
+  def symbol0 = _symbol0
+  def state1 = _state1
+  def symbol1 = _symbol1
+  def move = _move
 
-object Move extends Enumeration {
-  type Move = Value
-  val R, L, O = Value
-}
-
-class Transition(st0 : State, sy0 : Symbol, st1 : State, sy1 : Symbol, m : Move){
-
+  def rule = _rule
+  def result = _result
+  def definition = _definition
 }
 
 }
