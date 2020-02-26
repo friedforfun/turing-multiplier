@@ -14,13 +14,11 @@ class Tape(val turingMachine : TuringMachine, private val knownTape: Set[(Int, C
   // Set((0, 0x03A6.toChar), (1, 0x0031.toChar), (2, 0x0031.toChar), (3, 0x03A8.toChar), (4, 0x0031.toChar), (5, 0x0031.toChar))
 
   // Set of blank symbols on the tape
-  val tapeBlanks: Set[(Int, Char)] = (for (x <- initTapeRange(startTape)) yield if(!startTape.exists{case (i, c) =>
-                                                          i == x}) (x, tm.symbols(0))).toSet[Tuple2[Int, Char]]
-  // Set representing the initial tape contents
-  val initialTapeContents: Set[(Int, Char)] = startTape union tapeBlanks
+  private val blankIndeces = (for (x <- knownTape) yield x._1).diff(initTapeRange(knownTape).toSet)
+  private val tapeBlanks: Set[(Int, Char)] = for (x <- blankIndeces) yield (x, turingMachine.symbols.head)
 
-  // Actual tape init: List[TapeVal]
-  private var tape = for (x <- initialTapeContents.toList.sortBy(x => x._1)) yield TapeVal(x._1, x._2, "")
+  // Set representing the initial tape contents
+  private val tapeContents: Set[(Int, Char)] = knownTape union tapeBlanks
   private var curState = tm.initialState
   private var tapeIndex = initialIndex
   
