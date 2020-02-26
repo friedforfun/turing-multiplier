@@ -1,26 +1,26 @@
 package AbstractTM
 
-class Transition(st0 : String, sy0 : Char, st1 : String, sy1 : Char, m : Char){
+class Transition(private val st0 : String, private val sy0 : Char, private val st1 : String, private val sy1 : Char, private val m : Char){
   private val acceptedMoves : List[Char] = List('R', 'L', '0')
-  private val _state0 = st0
-  private val _symbol0 = sy0
-  private val _state1 = st1
-  private val _symbol1 = sy1
-  private val _move = if (acceptedMoves contains m) m else throw new Exception("Invalid move value in: "+this.toString)
+  val move: Char = if (acceptedMoves contains m) m else throw new Exception("Invalid move value in: "+this.toString)
+  val rule: Rule = new Rule(st0, sy0)
+  val result: Result = new Result(st1, sy0, move)
 
-  private val _rule = (state0, symbol0)
-  private val _result = (state1, symbol1, move)
-  private val _definition = (state0, symbol0, state1, symbol1, move)
+  class Rule(private val st0: String, private val sy0: Char) {
+    val state = st0
+    val symbol = sy0
+    override def toString: String = s"Transition rule: State = $state, Symbol = $symbol)"
+  }
 
-  override def toString: String = s"($state0, $symbol0, $state1, $symbol1, $move)"
-  def state0 = _state0
-  def symbol0 = _symbol0
-  def state1 = _state1
-  def symbol1 = _symbol1
-  def move = _move
+  class Result(private val st1: String, private val sy1: Char, private val m: Char ) {
+    val state = st1
+    val symbol = sy1
+    val move: Char = m
+    override def toString: String = s"Transition result: State = $state, Symbol = $symbol, Move = $move)"
+  }
 
-  def rule = _rule
-  def result = _result
+  private val _definition = (st0, sy0, st1, sy1, move)
   def definition = _definition
 
+  override def toString: String = s"Transition: ($st0, $sy0, $st1, $sy1, $move)"
 }
