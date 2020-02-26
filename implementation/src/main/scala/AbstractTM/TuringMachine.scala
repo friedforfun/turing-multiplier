@@ -3,6 +3,8 @@ package AbstractTM
 class TuringMachine {
 
   // Turing machine fields
+  var initialState: String = _states(0)
+  var finalState = _states(_states.size)
   private var _states: List[String] = List()
   private var _symbols: List[Char] = List()
   private var _transitions: List[Transition] = List()
