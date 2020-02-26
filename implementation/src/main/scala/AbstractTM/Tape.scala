@@ -13,7 +13,7 @@ class Tape(val turingMachine : TuringMachine, private val knownTape: Set[(Int, C
   private val tapeContents: Set[(Int, Char)] = knownTape union tapeBlanks
 
   // Actual tape: List[TapeVal]
-  val tape = for (x <- tapeContents.toVector.sorted) yield
+  var tape = for (x <- tapeContents.toVector.sorted) yield
     if (x._1 == initialIndex) TapeVal(x._1, x._2, turingMachine.initialState) else TapeVal(x._1, x._2, "")
 
   private def initTapeRange(set: Set[(Int, Char)]): Range.Inclusive = {
@@ -29,23 +29,30 @@ class Tape(val turingMachine : TuringMachine, private val knownTape: Set[(Int, C
 
   }
 
+  private def expandTape(): Vector[TapeVal] = {
+    if (tape(tapeIndex) == tape.head) extendTapedown(tape)
+    else if (tape(tapeIndex) == tape.last) extendTapeUp(tape)
+    else tape
+  }
+
   private def nextIndex(transition: Transition): Int = {
     val newIndex = transition.move match {
       case '0' => tapeIndex
       case 'R' => tapeIndex+1
       case 'L' => tapeIndex-1
     }
+
     newIndex
   }
 
   private def extendTapeUp(t: Vector[TapeVal]): Vector[TapeVal] = {
-    val top = t.last.index+1
+    val top = t.last.index + 1
     val newTape = tape :+ TapeVal(top, turingMachine.symbols.head, "")
     newTape
   }
 
   private def extendTapedown(t: Vector[TapeVal]): Vector[TapeVal] = {
-    val bottom = t.head.index -1
+    val bottom = t.head.index - 1
     val newTape = TapeVal(bottom, turingMachine.symbols.head, "") +: tape
     newTape
   }
