@@ -20,4 +20,33 @@ class Tape(val turingMachine : TuringMachine, private val knownTape: Set[(Int, C
     val intList = set.toVector.collect(x => x._1)
     intList.reduceLeft(min)-1 to intList.reduceLeft(max)+1
   }
+
+  private var tapeIndex = tape.indexWhere(x => x.state != "")
+  def run(): Unit ={
+    val transition: Transition = turingMachine.transitions(turingMachine.transitions.indexWhere(x =>
+      x.rule.state == tape(tapeIndex).state && x.rule.symbol == tape(tapeIndex).symbol))
+
+
+  }
+
+  private def nextIndex(transition: Transition): Int = {
+    val newIndex = transition.move match {
+      case '0' => tapeIndex
+      case 'R' => tapeIndex+1
+      case 'L' => tapeIndex-1
+    }
+    newIndex
+  }
+
+  private def extendTapeUp(t: Vector[TapeVal]): Vector[TapeVal] = {
+    val top = t.last.index+1
+    val newTape = tape :+ TapeVal(top, turingMachine.symbols.head, "")
+    newTape
+  }
+
+  private def extendTapedown(t: Vector[TapeVal]): Vector[TapeVal] = {
+    val bottom = t.head.index -1
+    val newTape = TapeVal(bottom, turingMachine.symbols.head, "") +: tape
+    newTape
+  }
 }
