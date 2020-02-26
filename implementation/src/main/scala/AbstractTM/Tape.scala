@@ -1,9 +1,9 @@
 package AbstractTM
 import scala.math.{max, min}
 
-case class TapeVal (index: Int, symbol: Char, state: String)
+class Tape(val turingMachine : TuringMachine, private val knownTape: Set[(Int, Char)], val initialIndex: Int = 0){
 
-class Tape(val tm : TuringMachine, val startTape: Set[(Int, Char)], val initialIndex: Int = 0){
+  case class TapeVal (index: Int, symbol: Char, state: String)
   // wedge: 0x22C0 | \wedge
   // 1:     0x0031| 1
   // Phi:   0x03A6 | \Phi
