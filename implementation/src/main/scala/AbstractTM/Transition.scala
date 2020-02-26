@@ -6,7 +6,7 @@ class Transition(st0 : String, sy0 : Char, st1 : String, sy1 : Char, m : Char){
   private val _symbol0 = sy0
   private val _state1 = st1
   private val _symbol1 = sy1
-  private val _move = if (acceptedMoves contains m) m else println("Invalid move value in: "+this.toString)
+  private val _move = if (acceptedMoves contains m) m else throw new Exception("Invalid move value in: "+this.toString)
 
   private val _rule = (state0, symbol0)
   private val _result = (state1, symbol1, move)
