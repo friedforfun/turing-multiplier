@@ -20,7 +20,7 @@ class AddOne {
   val addTransitions = List(t0, t1, t2, t3)
   val addOne = new TuringMachine(addStates, addSymbols, addTransitions)
   val tapeContents = Set((0, '1'), (1, '1'))
-  val tape = new Tape(addOne, tapeContents)
+  val startTape = new Tape(tapeContents)
 
 
 }
