@@ -1,9 +1,11 @@
 package AbstractTM
 import scala.math.{max, min}
 
-class Tape(val turingMachine : TuringMachine, private val knownTape: Set[(Int, Char)], val initialIndex: Int = 0){
+class Tape(private val knownTape: Set[(Int, Char)], private val initialIndex: Int = 0, private val emptySymbol: Char = 0x22C0.toChar){
 
-  case class TapeVal (index: Int, symbol: Char, state: String)
+  case class TapeVal (index: Int, symbol: Char) {
+    override def toString: String = symbol.toString
+  }
 
   // Set of blank symbols on the tape
   private val blankIndeces = (for (x <- knownTape) yield x._1).diff(initTapeRange(knownTape).toSet)
