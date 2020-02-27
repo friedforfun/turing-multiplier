@@ -1,4 +1,5 @@
 package AbstractTM
+
 import scala.math.{max, min}
 
 class Tape(private val knownTape: Set[(Int, Char)], private val initialIndex: Int = 0, private val emptySymbol: Char = 0x22C0.toChar){
@@ -7,32 +8,22 @@ class Tape(private val knownTape: Set[(Int, Char)], private val initialIndex: In
     override def toString: String = symbol.toString
   }
 
-  // Set of blank symbols on the tape
-  private val blankIndeces = (for (x <- knownTape) yield x._1).diff(initTapeRange(knownTape).toSet)
-  private val tapeBlanks: Set[(Int, Char)] = for (x <- blankIndeces) yield (x, turingMachine.symbols.head)
+  private val blankIndeces = initTapeRange(knownTape).toSet.diff((for (x <- knownTape) yield x._1))
+  private val tapeBlanks: Set[(Int, Char)] = for (x <- blankIndeces) yield (x, emptySymbol)
 
   // Set representing the initial tape contents
-  private val tapeContents: Set[(Int, Char)] = knownTape union tapeBlanks
-
-  // Actual tape: List[TapeVal]
-  var tape = for (x <- tapeContents.toVector.sorted) yield
-    if (x._1 == initialIndex) TapeVal(x._1, x._2, turingMachine.initialState) else TapeVal(x._1, x._2, "")
+  private val tapeContents: Set[TapeVal] = for (x <- (knownTape union tapeBlanks)) yield TapeVal(x._1, x._2)
 
   private def initTapeRange(set: Set[(Int, Char)]): Range.Inclusive = {
-    val intList = set.toVector.collect(x => x._1)
+    val intList: Vector[Int] = set.toVector.collect(x => x._1)
     intList.reduceLeft(min)-1 to intList.reduceLeft(max)+1
   }
 
-  private var tapeIndex = tape.indexWhere(x => x.state != "")
-  def run(): Unit ={
-    val transition: Transition = turingMachine.transitions(turingMachine.transitions.indexWhere(x =>
-      x.rule.state == tape(tapeIndex).state && x.rule.symbol == tape(tapeIndex).symbol))
+  val tape: Vector[TapeVal] = tapeContents.toVector.sortBy(_.index)
+  private var tapeIndex = initialIndex
 
-
-  }
-
-  private def expandTape(): Vector[TapeVal] = {
-    if (tape(tapeIndex) == tape.head) extendTapedown(tape)
+  def expandTape(): Vector[TapeVal] = {
+    if (tape(tapeIndex) == tape.head) extendTapeDown(tape)
     else if (tape(tapeIndex) == tape.last) extendTapeUp(tape)
     else tape
   }
@@ -43,19 +34,27 @@ class Tape(private val knownTape: Set[(Int, Char)], private val initialIndex: In
       case 'R' => tapeIndex+1
       case 'L' => tapeIndex-1
     }
-
     newIndex
   }
 
   private def extendTapeUp(t: Vector[TapeVal]): Vector[TapeVal] = {
     val top = t.last.index + 1
-    val newTape = tape :+ TapeVal(top, turingMachine.symbols.head, "")
+    val newTape = tape :+ TapeVal(top, emptySymbol) :+ TapeVal(top+1, emptySymbol)
     newTape
   }
 
-  private def extendTapedown(t: Vector[TapeVal]): Vector[TapeVal] = {
+  private def extendTapeDown(t: Vector[TapeVal]): Vector[TapeVal] = {
     val bottom = t.head.index - 1
-    val newTape = TapeVal(bottom, turingMachine.symbols.head, "") +: tape
+    val newTape = TapeVal(bottom-1, emptySymbol) +: TapeVal(bottom, emptySymbol) +: tape
     newTape
   }
+
+
+  override def toString: String = {
+    val str = new StringBuilder
+    str.append("| ")
+    for (x <- tape) str.append(x.toString+" | ")
+    str.toString()
+  }
+
 }
