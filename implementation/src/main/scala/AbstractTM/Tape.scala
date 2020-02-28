@@ -34,18 +34,35 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
   }
 
   def run(): scala.collection.immutable.Vector[Vector[TapeVal]] = {
-    val build = new VectorBuilder[Vector[TapeVal]]
-    val startTime = System.currentTimeMillis()
+    val states = new VectorBuilder[String]
+    val indexes = new VectorBuilder[Int]
+    val tapes = new VectorBuilder[Vector[TapeVal]]
     var latest = tape
+    states.addOne(tapeState)
+    indexes.addOne(tapeIndex)
+    tapes.addOne(latest)
+
+    val startTime = System.currentTimeMillis()
+    //println(s"State: $tapeState, Index: ${tapeIndex.toString}, VectorIndex: ${vectorIndex.toString}")
+    println(latest)
     while (!finish()){
-      println(latest)
+      // add states to collection here
+
       latest = step(latest)
-      build.addOne(latest)
+      //println(s"State: $tapeState, Index: ${tapeIndex.toString}")
+      println(latest)
+      states.addOne(tapeState)
+      indexes.addOne(tapeIndex)
+      tapes.addOne(latest)
     }
-    val collection = build.result()
+    val indexCollection = indexes.result()
+    val stateCollection = states.result()
+    val tapeCollection = tapes.result()
     val endTime = System.currentTimeMillis()
+    println(s"Number of tapes: ${tapeCollection.size}")
     println("Elapsed time: " + (endTime - startTime) + "ms")
-    collection
+
+    tapeCollection
   }
 
   def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
