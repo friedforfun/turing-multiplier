@@ -51,6 +51,32 @@ class Tape(private val knownTape: Set[(Int, Char)], private val initialIndex: In
     println("Elapsed time: " + (endTime - startTime) + "ms")
     collection
   }
+
+  def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
+    vectorIndex = curTape.indexWhere(x => x.index == tapeIndex)
+    val transition: Transition = {
+      turingMachine.transitions.find(x => (x.rule.symbol == curTape(vectorIndex).symbol && x.rule.state == tapeState)) match {
+        case None => throw new Exception("No transition exists for this state and symbol")
+        case Some(s) => s
+      }
+    }
+    tapeState = transition.result.state
+    val nextTape: Vector[TapeVal] = curTape.updated(vectorIndex, TapeVal(curTape(vectorIndex).index, transition.result.symbol))
+    tapeIndex = nextIndex(transition)
+    val finalTape = expandTape(nextTape)
+    finalTape
+  }
+
+  private def finish(): Boolean = {
+    val finished = if (tapeState == turingMachine.finalState) true else false
+    finished
+  }
+
+  def expandTape(t: Vector[TapeVal]): Vector[TapeVal] = {
+    if (t(vectorIndex) == t.head) extendTapeDown(t)
+    else if (t(vectorIndex) == t.last) extendTapeUp(t)
+    else t
+  }
   private def extendTapeUp(t: Vector[TapeVal]): Vector[TapeVal] = {
     val top = t.last.index + 1
     val newTape = tape :+ TapeVal(top, emptySymbol) :+ TapeVal(top+1, emptySymbol)
