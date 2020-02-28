@@ -6,10 +6,6 @@ import scala.math.{max, min}
 
 class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMachine, private val initialIndex: Int = 0){
 
-  case class TapeVal (index: Int, symbol: Char) {
-    override def toString: String = symbol.toString
-  }
-
   private val emptySymbol = turingMachine.emptySymbol
   private val blankIndeces = initTapeRange(knownTape).toSet.diff((for (x <- knownTape) yield x._1))
   private val tapeBlanks: Set[(Int, Char)] = for (x <- blankIndeces) yield (x, emptySymbol)
@@ -67,6 +63,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
 
   def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
     vectorIndex = curTape.indexWhere(x => x.index == tapeIndex)
+    print("Index: "+vectorIndex.toString+" ")
     val transition: Transition = {
       turingMachine.transitions.find(x => (x.rule.symbol == curTape(vectorIndex).symbol && x.rule.state == tapeState)) match {
         case None => throw new Exception(s"No transition exists for this state: ${tapeState} and symbol: ${curTape(vectorIndex).symbol.toString}")
@@ -105,7 +102,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
 
   private def initTapeRange(set: Set[(Int, Char)]): Range.Inclusive = {
     val intList: Vector[Int] = set.toVector.collect(x => x._1)
-    intList.reduceLeft(min)-5 to intList.reduceLeft(max)+5
+    intList.reduceLeft(min)-1 to intList.reduceLeft(max)+15
   }
 
   override def toString: String = {
