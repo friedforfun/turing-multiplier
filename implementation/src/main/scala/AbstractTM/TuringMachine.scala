@@ -1,7 +1,8 @@
 package AbstractTM
 
-class TuringMachine(val states: List[String], val symbols: List[Char], val transitions: List[Transition]){
-  var initialState: String = states.head
-  var finalState = states.tail
+class TuringMachine(val states: Vector[String], val symbols: Vector[Char], val transitions: Vector[Transition]){
+  val initialState: String = states.head
+  val finalState = states.last
+  val emptySymbol = symbols.head
 
 }
