@@ -52,7 +52,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     vectorIndex = curTape.indexWhere(x => x.index == tapeIndex)
     val transition: Transition = {
       turingMachine.transitions.find(x => (x.rule.symbol == curTape(vectorIndex).symbol && x.rule.state == tapeState)) match {
-        case None => throw new Exception("No transition exists for this state and symbol")
+        case None => throw new Exception(s"No transition exists for this state: ${tapeState} and symbol: ${curTape(vectorIndex).symbol.toString}")
         case Some(s) => s
       }
     }
