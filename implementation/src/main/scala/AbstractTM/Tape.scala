@@ -37,6 +37,20 @@ class Tape(private val knownTape: Set[(Int, Char)], private val initialIndex: In
     newIndex
   }
 
+  def run(): scala.collection.immutable.Vector[Vector[TapeVal]] = {
+    val build = new VectorBuilder[Vector[TapeVal]]
+    val startTime = System.currentTimeMillis()
+    var latest = tape
+    while (!finish()){
+      println(latest)
+      latest = step(latest)
+      build.addOne(latest)
+    }
+    val collection = build.result()
+    val endTime = System.currentTimeMillis()
+    println("Elapsed time: " + (endTime - startTime) + "ms")
+    collection
+  }
   private def extendTapeUp(t: Vector[TapeVal]): Vector[TapeVal] = {
     val top = t.last.index + 1
     val newTape = tape :+ TapeVal(top, emptySymbol) :+ TapeVal(top+1, emptySymbol)
