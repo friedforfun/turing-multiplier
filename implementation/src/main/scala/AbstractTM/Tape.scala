@@ -29,7 +29,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     newIndex
   }
 
-  def run(): scala.collection.immutable.Vector[Vector[TapeVal]] = {
+  def run(): (scala.collection.immutable.Vector[Vector[TapeVal]], Vector[Int], Vector[String]) = {
     val states = new VectorBuilder[String]
     val indexes = new VectorBuilder[Int]
     val tapes = new VectorBuilder[Vector[TapeVal]]
@@ -58,7 +58,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     println(s"Number of tapes: ${tapeCollection.size}")
     println("Elapsed time: " + (endTime - startTime) + "ms")
 
-    tapeCollection
+    (tapeCollection, indexCollection, stateCollection)
   }
 
   def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
