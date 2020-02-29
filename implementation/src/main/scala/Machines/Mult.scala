@@ -43,7 +43,7 @@ class Mult {
   val t21 = new Transition("q5", psi, "q11", psi, 'L')
   val t22 = new Transition("q6", '1', "q6", '1', 'R')
   val t23 = new Transition("q6", psi, "q12", psi, 'R')
-  val t24 = new Transition("q6", phi, "q6", phi, 'R')
+  val t24 = new Transition("q12", phi, "q12", phi, 'R')
   val t25 = new Transition("q12", omega, "q10", omega, 'L')
   val t26 = new Transition("q7", omega, "q8", omega, 'R')
   val t27 = new Transition("q7", wedge, "q8", omega, 'R')

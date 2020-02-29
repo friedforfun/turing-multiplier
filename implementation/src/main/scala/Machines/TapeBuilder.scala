@@ -25,6 +25,7 @@ object TapeBuilder {
     index
   }
   def buildTape(x: Int, y: Int): Set[(Int, Char)]={
+    counter = -1
     val setBuild = new VectorBuilder[(Int, Char)]
 
     setBuild.addOne(index, wedge)
