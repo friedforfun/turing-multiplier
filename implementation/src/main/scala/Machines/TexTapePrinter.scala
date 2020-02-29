@@ -35,25 +35,31 @@ object TexTapePrinter {
     val indexColl = data._2
     val stateColl = data._3
 
-    val windowSize = 15
+    val windowSize = 13
     val pw = new PrintWriter(new File(fileName+".tex"), "UTF-8")
     pw.write("\\documentclass{article}\n")
+    pw.write("\\usepackage[margin=0.5in]{geometry}\n")
+    pw.write("\\usepackage{dashrule}\n")
+    pw.write("\\usepackage{float}\n")
     pw.write("\\begin{document}\n")
 
     pw.write("\n")
-    pw.write("\\section{Tape start}")
+    pw.write("\\section{Tape start}\n")
 
-    for (x <- coll) {
-
+    for (x <- 0 until coll.size) {
+      if (x % 4 == 0) pw.write(("\\clearpage\n"))
       pw.write("\n")
-      pw.write("\\begin{table}[h]\n")
+      pw.write("\\begin{table}[H]\n")
       pw.write("\\centering\n")
 
-      val window = x.sliding(windowSize, windowSize).toVector
+      val window = coll(x).sliding(windowSize, windowSize).toVector
       for (z <- window){
+
+
         pw.write("\\begin{tabular}{l")
         for (y <- z.head.index to z.last.index) pw.write("l")
         pw.write("l}\n")
+
 
         // Write index
         pw.write(" & ")
@@ -72,7 +78,7 @@ object TexTapePrinter {
         // Write uparrow
         pw.write("& ")
         for (u <- z.head.index to z.last.index) {
-          if (u == indexColl(coll.indexOf(x))) pw.write("$\\uparrow$ & ")
+          if (u == indexColl(x)) pw.write("$\\uparrow$ & ")
           else pw.write(" & ")
         }
         pw.write(" \\\\\n")
@@ -80,17 +86,18 @@ object TexTapePrinter {
         // Write state under uparrow
         pw.write("& ")
         for (u <- z.head.index to z.last.index) {
-          if (u == indexColl(coll.indexOf(x))) pw.write(s"$$ ${stateColl(coll.indexOf(x))} $$ & ")
+          if (u == indexColl(x)) pw.write(s"$$ ${stateColl(x)} $$ & ")
           else pw.write(" & ")
         }
         pw.write(" \\\\\n")
 
         pw.write("\\end{tabular}\n")
       }
-      pw.write(s"Tape number: ${coll.indexOf(x).toString}\n") // matches tape appearance not specific instance of x
+      pw.write(s"\\\\\nTape number: ${x.toString}\n") // matches tape appearance not specific instance of x
+      pw.write("\\noindent\\makebox[\\linewidth]{\\hdashrule{\\textwidth}{1pt}{1pt}}")
       pw.write("\\end{table}\n")
 
-      if (coll.indexOf(x) % 15 == 1) pw.write(("\\clearpage\n"))
+
     }
 
     pw.write("\n")
