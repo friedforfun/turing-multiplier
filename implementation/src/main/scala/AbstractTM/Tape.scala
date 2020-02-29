@@ -17,6 +17,8 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
   private var tapeIndex = initialIndex
   private var vectorIndex = tape.indexWhere(x => x.index == tapeIndex)
 
+
+
   var tapeState: String = turingMachine.initialState
   def setState(state: String): Unit = tapeState = state
 

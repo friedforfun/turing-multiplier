@@ -3,6 +3,8 @@ package Machines
 import AbstractTM.{Tape, Transition, TuringMachine}
 
 class Mult {
+  // multiplier machine, can handle negative numbers
+
   // wedge: 0x22C0 | \wedge
   val wedge = 0x22C0.toChar
   // Phi:   0x03A6 | \Phi

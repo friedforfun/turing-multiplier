@@ -2,7 +2,7 @@ package Machines
 import AbstractTM.{Tape, Transition, TuringMachine}
 
 class AddOne {
-
+  // addOne turing machine from lectures
   val addStates = Vector("q0", "q1", "q2")
   val addSymbols = Vector(0x22C0.toChar, '1')
   val t0 = new Transition("q0", '1', "q0", '1', 'R')
