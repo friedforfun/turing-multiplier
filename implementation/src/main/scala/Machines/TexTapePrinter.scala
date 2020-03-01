@@ -21,6 +21,16 @@ object TexTapePrinter {
     val m = 0x004D.toChar
     // Xi:    0x039E | \Xi
     val xi = 0x039E.toChar
+
+    val times = 0x2A09.toChar
+    //val times = 0x03A8.toChar
+    val bot = 0x22A5.toChar
+    val d = 0x0044.toChar
+    val t = 0x0054.toChar
+    val u = 0x0055.toChar
+    val v = 0x0056.toChar
+    val equals = 0x003D.toChar
+    val one = 0x0031.toChar
     char match {
       case '⋀' => "\\wedge"
       case 'Φ' => "\\Phi"
@@ -29,6 +39,13 @@ object TexTapePrinter {
       case '1' => "1"
       case 'M' => "M"
       case 'Ξ' => "\\Xi"
+      case '⊥' => "\\bot"
+      case '=' => "="
+      case 'T' => "T"
+      case 'U' => "U"
+      case 'V' => "V"
+      case 'D' => "D"
+
     }
   }
 
