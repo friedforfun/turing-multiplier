@@ -4,6 +4,7 @@
 *.log
 *.gz
 *.toc
+*.out
 /implementation/.idea/
 /implementation/target/
 /implementation/project/target/
