@@ -1,6 +1,7 @@
 package Machines
 import java.io._
-import AbstractTM.TapeVal
+
+import AbstractTM.{Tape, TapeVal}
 
 object TexTapePrinter {
 
@@ -30,10 +31,12 @@ object TexTapePrinter {
     }
   }
 
-  def tex(fileName: String, data: (Vector[Vector[TapeVal]], Vector[Int], Vector[String])): Unit = {
-    val coll = data._1
-    val indexColl = data._2
-    val stateColl = data._3
+  def tex(fileName: String, tape: Tape, tapesPerPage: Int = 4): Unit = {
+    val coll = tape.tapeCollection._1
+    val indexColl = tape.tapeCollection._2
+    val stateColl = tape.tapeCollection._3
+    val runTime = tape.runTime
+    val numberOfTapes = tape.tapeCounter
 
     val windowSize = 13
     val pw = new PrintWriter(new File(fileName+".tex"), "UTF-8")
@@ -45,9 +48,11 @@ object TexTapePrinter {
 
     pw.write("\n")
     pw.write("\\section{Tape start}\n")
+    pw.write(s"Number of tapes: ${numberOfTapes.toString}\\\\\n")
+    pw.write(s"Tape execution time: ${runTime.toString}\\\\\n")
 
     for (x <- 0 until coll.size) {
-      if (x % 4 == 0) pw.write(("\\clearpage\n"))
+      if (x % tapesPerPage == 0 && x != 0) pw.write(("\\clearpage\n"))
       pw.write("\n")
       pw.write("\\begin{table}[H]\n")
       pw.write("\\centering\n")
