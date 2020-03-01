@@ -2,6 +2,7 @@ package Machines
 import java.io._
 import AbstractTM.TapeVal
 
+// Print output of tape in latex format
 object TexTapePrinter {
 
 

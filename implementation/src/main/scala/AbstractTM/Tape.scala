@@ -17,11 +17,10 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
   private var tapeIndex = initialIndex
   private var vectorIndex = tape.indexWhere(x => x.index == tapeIndex)
 
-
-
   var tapeState: String = turingMachine.initialState
   def setState(state: String): Unit = tapeState = state
 
+  // given a transition returns the next tape index
   private def nextIndex(transition: Transition): Int = {
     val newIndex = transition.move match {
       case '0' => tapeIndex
@@ -31,6 +30,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     newIndex
   }
 
+  // builds 3 collections, a collection of tapes, one of indices and one of states
   def run(): (scala.collection.immutable.Vector[Vector[TapeVal]], Vector[Int], Vector[String]) = {
     val states = new VectorBuilder[String]
     val indexes = new VectorBuilder[Int]
@@ -41,13 +41,11 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     tapes.addOne(latest)
 
     val startTime = System.currentTimeMillis()
-    //println(s"State: $tapeState, Index: ${tapeIndex.toString}, VectorIndex: ${vectorIndex.toString}")
+
     println(latest)
     while (!finish()){
-      // add states to collection here
 
       latest = step(latest)
-      //println(s"State: $tapeState, Index: ${tapeIndex.toString}")
       println(latest)
       states.addOne(tapeState)
       indexes.addOne(tapeIndex)
@@ -63,6 +61,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     (tapeCollection, indexCollection, stateCollection)
   }
 
+  // One step on the tape, returns the next tape
   def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
     vectorIndex = curTape.indexWhere(x => x.index == tapeIndex)
     print("Index: "+vectorIndex.toString+" ")
@@ -79,12 +78,14 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     finalTape
   }
 
+  // Checks if tape is in the final state
   private def finish(): Boolean = {
     val finished = if (tapeState == turingMachine.finalState) true else false
     finished
   }
 
-  def expandTape(t: Vector[TapeVal]): Vector[TapeVal] = {
+  // extends the tape with blanks
+  private def expandTape(t: Vector[TapeVal]): Vector[TapeVal] = {
     if (t(vectorIndex) == t.head) extendTapeDown(t)
     else if (t(vectorIndex) == t.last) extendTapeUp(t)
     else t
@@ -102,6 +103,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     newTape
   }
 
+  // initialise the tape with extra blank symbols
   private def initTapeRange(set: Set[(Int, Char)]): Range.Inclusive = {
     val intList: Vector[Int] = set.toVector.collect(x => x._1)
     intList.reduceLeft(min)-1 to intList.reduceLeft(max)+15
