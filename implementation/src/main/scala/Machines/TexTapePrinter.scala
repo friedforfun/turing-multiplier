@@ -39,7 +39,7 @@ object TexTapePrinter {
     val runTime = tape.runTime
     val numberOfTapes = tape.tapeCounter
 
-    val windowSize = 13
+    val windowSize = 18
     val pw = new PrintWriter(new File(fileName+".tex"), "UTF-8")
     pw.write("\\documentclass{article}\n")
     pw.write("\\usepackage[margin=0.5in]{geometry}\n")
@@ -50,7 +50,7 @@ object TexTapePrinter {
     pw.write("\n")
     pw.write("\\section{Tape start}\n")
     pw.write(s"Number of tapes: ${numberOfTapes.toString}\\\\\n")
-    pw.write(s"Tape execution time: ${runTime.toString}\\\\\n")
+    pw.write(s"Tape execution time: ${runTime.toString}ms\\\\\n")
 
     for (x <- 0 until coll.size) {
       if (x % tapesPerPage == 0 && x != 0) pw.write(("\\clearpage\n"))
