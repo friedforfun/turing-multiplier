@@ -17,8 +17,6 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
   private var tapeIndex = initialIndex
   private var vectorIndex = tape.indexWhere(x => x.index == tapeIndex)
 
-
-
   var tapeState: String = turingMachine.initialState
   def setState(state: String): Unit = tapeState = state
 
@@ -31,7 +29,16 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     newIndex
   }
 
-  def run(): (scala.collection.immutable.Vector[Vector[TapeVal]], Vector[Int], Vector[String]) = {
+  // Collection of all tapes produced by the turing machine running the input tape
+  val tapeCollection = this.run()
+
+  // tapes meta data
+  val runTime: Long = tapeCollection._4
+  val tapeCounter = tapeCollection._5
+
+
+
+  def run(): (scala.collection.immutable.Vector[Vector[TapeVal]], Vector[Int], Vector[String], Long, Int) = {
     val states = new VectorBuilder[String]
     val indexes = new VectorBuilder[Int]
     val tapes = new VectorBuilder[Vector[TapeVal]]
@@ -53,14 +60,26 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
       indexes.addOne(tapeIndex)
       tapes.addOne(latest)
     }
+    val endTime = System.currentTimeMillis()
+
+    // gather data
     val indexCollection = indexes.result()
     val stateCollection = states.result()
     val tapeCollection = tapes.result()
-    val endTime = System.currentTimeMillis()
-    println(s"Number of tapes: ${tapeCollection.size}")
-    println("Elapsed time: " + (endTime - startTime) + "ms")
 
-    (tapeCollection, indexCollection, stateCollection)
+    val numberOfTapes = tapeCollection.size
+    val runTime = endTime - startTime
+
+    println(s"Number of tapes: ${numberOfTapes}")
+    println("Elapsed time: " + (runTime) + "ms")
+
+    // reset tape to run again if desired
+    tapeState = turingMachine.initialState
+    tapeIndex = initialIndex
+    vectorIndex = tape.indexWhere(x => x.index == tapeIndex)
+
+    // return collection data
+    (tapeCollection, indexCollection, stateCollection, runTime, numberOfTapes)
   }
 
   def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
@@ -104,7 +123,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
 
   private def initTapeRange(set: Set[(Int, Char)]): Range.Inclusive = {
     val intList: Vector[Int] = set.toVector.collect(x => x._1)
-    intList.reduceLeft(min)-1 to intList.reduceLeft(max)+15
+    intList.reduceLeft(min)-1 to intList.reduceLeft(max)+5
   }
 
   override def toString: String = {
