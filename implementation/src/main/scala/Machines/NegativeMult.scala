@@ -2,7 +2,7 @@ package Machines
 
 import AbstractTM.{Tape, Transition, TuringMachine}
 
-class Mult {
+class NegativeMult {
   // multiplier machine, can handle negative numbers
 
   // wedge: 0x22C0 | \wedge
@@ -71,14 +71,11 @@ class Mult {
 
 
   val transitions = Vector(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42, t43, t44, t45, t46)
-  val mult = new TuringMachine(states, symbols, transitions)
-  val tapeContents = Set((-1, wedge), (0, '1'), (1, '1'), (2, psi), (3, '1'), (4, '1'), (5, wedge))
-  val otherTapeContents = TapeBuilder.buildTape(100, 100)
-  val tape = new Tape(tapeContents, mult)
-  val otherTape = new Tape(otherTapeContents, mult)
+  val negMult = new TuringMachine(states, symbols, transitions)
+
 
   def newTape(x: Int, y: Int): Tape = {
-    val nextTape = new Tape(TapeBuilder.buildTape(x, y), mult)
+    val nextTape = new Tape(TapeBuilder.buildTape(x, y), negMult)
     nextTape
   }
 }
