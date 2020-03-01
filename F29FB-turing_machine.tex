@@ -54,6 +54,9 @@ M_{mult}(q_{11}, 1) &= (q_{11}, 1, L)	&	M_{mult}(q_{11}, \Phi) &= (q_{11}, \Phi,
 M_{mult}(q_{11}, \wedge) &= (q_{12}, \wedge, R)	 \\
 \end{align*}
 
+
+$\bot$
+
 \section{Discussion of graph}
 \subsection{Logic of graph}
 describe the logic of the graph, why I chose this logical method. consider the correctness.
@@ -69,10 +72,11 @@ cut down version here
 How the graph works, where to start, where you end and dealing with 0, and negative numbers
 
 \section{Implementation of Turing machine}
-Language choice
+
+The Language this Turing machine is implemented in is Scala. To start with Scala is a fun language write code in, the object oriented style helps with separation of concerns, while the functional aspects; immutability and the structural sharing from data types such as Scala Vectors saves considerable memory when running tapes for (relatively) large multiplications such as 100*100.
 
 \section{Tests}
-Tests, inlcuding count of tapes printed, time to complete test
+Tests, including count of tapes printed, time to complete test
 \subsection{Quick summary}
 I have included a few tests on the following pages to demonstrate, basic functionality and corner cases.
 

@@ -3,6 +3,7 @@ import java.io._
 
 import AbstractTM.{Tape, TapeVal}
 
+// Print output of tape in latex format
 object TexTapePrinter {
 
 
