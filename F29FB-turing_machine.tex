@@ -3180,6 +3180,9 @@ This method of calculation is extremely inefficient, the speed can be significan
 
 \section{Power of 3 machine}
 
-
+I would build a Turing machine called $Mres()$, which results in a tape holding only the rightmost value from the the result of $Mmult()$ (everything to the right of $\Omega$).\\
+To extend a multiplier machine to a power of 3 machine, you could use the machine to calculate the value of $n^{2}$ first: $Mres(Mmult(n, n))$, and then multiply the result of $n^{2}$ by $n$ to get $n^{3}$
+\\
+\noindent In other words: $Mmult(res(Mmult(n, n)), n)$
 
 \end{document}
