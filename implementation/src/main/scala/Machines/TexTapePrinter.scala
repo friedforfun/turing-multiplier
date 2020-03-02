@@ -47,7 +47,7 @@ object TexTapePrinter {
     pw.write("\n")
     pw.write("\\section{Tape start}\n")
     pw.write(s"Number of tapes: ${numberOfTapes.toString}\\\\\n")
-    pw.write(s"Tape execution time: ${runTime.toString}ms\\\\\n")
+    pw.write(s"Tape execution time: ${runTime.toString}ns\\\\\n")
 
     for (x <- 0 until coll.size) {
       if (x % tapesPerPage == 0 && x != 0) pw.write(("\\clearpage\n"))

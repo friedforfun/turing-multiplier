@@ -53,7 +53,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     indexes.addOne(tapeIndex)
     tapes.addOne(latest)
 
-    val startTime = System.currentTimeMillis()
+    val startTime = System.nanoTime()
 
     println(latest)
     while (!finish()){
@@ -64,7 +64,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
       indexes.addOne(tapeIndex)
       tapes.addOne(latest)
     }
-    val endTime = System.currentTimeMillis()
+    val endTime = System.nanoTime()
 
     // gather data
     val indexCollection = indexes.result()
@@ -75,7 +75,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
     val runTime = endTime - startTime
 
     println(s"Number of tapes: ${numberOfTapes}")
-    println("Elapsed time: " + (runTime) + "ms")
+    println("Elapsed time: " + (runTime) + "ns")
 
     // reset tape to run again if desired
     tapeState = turingMachine.initialState
@@ -93,7 +93,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
 
     // Identify correct transition for this state and symbol
     val transition: Transition = {
-      turingMachine.rules.find(x => (x.rule.symbol == curTape(vectorIndex).symbol && x.rule.state == tapeState)) match {
+      turingMachine.transitions.find(x => (x.rule.symbol == curTape(vectorIndex).symbol && x.rule.state == tapeState)) match {
         case None => throw new Exception(s"No transition exists for this state: ${tapeState} and symbol: ${curTape(vectorIndex).symbol.toString}")
         case Some(s) => s
       }

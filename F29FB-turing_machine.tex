@@ -1,5 +1,5 @@
 \title{\bf Foundations2 \\Assignment 2020\\ Turing Machine multiplier\\}
-\author{Sam Fay-Hunt \texttt{sf52@hw.ac.uk}}
+\author{Sam Fay-Hunt | \texttt{sf52@hw.ac.uk}}
 \documentclass[11pt]{article}
 \usepackage[margin=0.8in]{geometry} 
 \usepackage{amsmath}
@@ -8,17 +8,25 @@
 \usepackage{float}
 \usepackage{hyperref}
 \usepackage{url}
+\usepackage{mwe}
+\usepackage[markcase=noupper% remove the uppercasing
+]{scrlayer-scrpage}
+\usepackage{caption}
 
 \hypersetup{ linktoc=all}
 \graphicspath{ {./images/} }
+\ofoot*{\pagemark}
+\ifoot*{Sam Fay-Hunt | sf52@hw.ac.uk\\ Foundations 2 - Assignment 1}
+\ohead{}
 
 \begin{document}
 \date{}
 \maketitle
+\thispagestyle{empty}
 
 \tableofcontents
 \pagebreak
-
+\setcounter{page}{1}
 \section{Turing machine multiplication}
 \subsection{Graph - Multiplication positive and negative numbers}
 \begin{figure}[H]
@@ -34,8 +42,8 @@
 \subsection{Formal definition}
 The following is the formal definition of the multiplier machine with negative numbers.
 
-$States = \{q_0, q_1, q_2, q_3, q_4, q_5, q_6, q_7, q_8, q_9, q_{10}, q_{11}, q_{12}, q_{13}, q_{14}\}$\\
-$Symbols = \{\wedge, \Phi, \Psi, \Omega, 1, M, \Xi \}$
+$$States = \{q_0, q_1, q_2, q_3, q_4, q_5, q_6, q_7, q_8, q_9, q_{10}, q_{11}, q_{12}, q_{13}, q_{14}\}$$\\
+$$Symbols = \{\wedge, \Phi, \Psi, \Omega, 1, M, \Xi \}$$
 \begin{align*}
 M_{mult}(q_0, \wedge) &= (q_{14}, \wedge, 0)    &     M_{mult}(q_0, 1) &= (q_{0}, 1, R) \\
 M_{mult}(q_{0}, \Psi) &= (q_{13}, \Psi, R)    &     M_{mult}(q_{0}, \Phi) &= (q_{2}, \Phi, R) \\
@@ -72,7 +80,7 @@ Initially the machine determines if either, or both, of the pair of numbers on t
 
 Following this the tape returns to the start index by moving left until it reaches the wedge symbol '$\wedge$', it then moves right until it reaches the first '$1$' which it changes to an '$M$'. '$M$' represents a pointer indicating how many times we copy the second number on the tape. Thus the machine moves along the tape until it reaches the '$\Psi$' symbol, indicating it has reached the second number. 
 
-From this point the machine essentially runs a modified version of copy machine found in lecture 7 (See Figure~\ref{fig:copyMachine}) where states $q_{12}$ (Figure~\ref{image:negMult}) corresponds to $q_0$ and $q_10$ (Figure~\ref{image:negMult}) corresponds to $q_f$. Once the copy finishes it goes back to the '$M$' symbol and moves right 1 space and repeats until the second input number has been copied the same number of times as the value of the first number.
+From this point the machine essentially runs a modified version of copy machine found in lecture 7 (See Figure~\ref{fig:copyMachine}) where states $q_{12}$ (Figure~\ref{image:negMult}) corresponds to $q_0$ and $q_{10}$ (Figure~\ref{image:negMult}) corresponds to $q_f$. Once the copy finishes it goes back to the '$M$' symbol and moves right 1 space and repeats until the second input number has been copied the same number of times as the value of the first number. Upon completion it returns to the '$0$th' index position and enters the final state.
 
 \begin{figure}[H]
 	\makebox[\textwidth]{\includegraphics[width=0.9\paperwidth]{copy_machine}}
@@ -80,24 +88,164 @@ From this point the machine essentially runs a modified version of copy machine 
 	\label{fig:copyMachine}
 \end{figure}
 
+\subsection{States \& Symbols}
+
+The states are mostly selected for their functionality. No 2 states have the same set of edges, and the total number of states has been minimized to some extent, such that where possible I have condensed what could be a singe step transition into a loop back to the same state rather than add an extra state, an example of this can be observed as a rule on state $q_4$ in Figure~\ref{image:negMult}. 
+
 It may be possible to reduce the number of states in the machine  from Figure~\ref{image:negMult}  even further, a reduction in the number of states has already been achieved from the Figure~\ref{fig:copyMachine} Copy Machine as can be observed by comparing the effective functionality of $q_3$ and $q_4$ in Figure~\ref{fig:copyMachine} to $q_9$ in Figure~\ref{image:negMult}.
 
-Reducing the number of symbols is very possible, the machine in question (Figure~\ref{image:negMult}) could be reduced to 3 symbols: $Symbols = \{\wedge, \Phi, 1\}$ \\
-But readability would suffer as a consequence, the extra symbols have little or no effective performance overhead.
+Reducing the number of symbols is very possible, the machine in question (Figure~\ref{image:negMult}) could be reduced to 3 symbols: '$Symbols = \{\wedge, \Phi, 1\}$', where the '$\wedge$ symbol replaces all spacer symbols. Readability would suffer as a consequence, the extra symbols have little or no effective performance overhead so a preference for human understanding of the tapes is more useful.
 
-The graph of the Turing machine with negative numbers does somewhat lack clarity, in part because some effort has been made to minimize the number of states; a version with some duplicate states might look prettier. Also adding negative number functionality and dealing with corner cases  such as multiply by $0$ required that some slightly difficult to route edges had to be introduced.
+\subsection{Clarity}
 
-\subsection{States \& Symbols}
-Why I chose these states and symbols
-blah
-cut down version here
+The graph of the Turing machine with negative numbers does somewhat lack clarity, in part because some effort has been made to minimize the number of states; a version with some duplicate states might look prettier. Also adding negative number functionality and dealing with corner cases  such as multiply by $0$ required that some slightly difficult to route edges had to be introduced. A machine that simply performs multiplication on positive integers greater than $0$ would be much clearer.
 
-\section{TM functionality}
-How the graph works, where to start, where you end and dealing with 0, and negative numbers
+\section{How it works}
+\subsection{Definition of symbols}
+$$Symbols = \{\wedge, \Phi, \Psi, \Omega, 1, M, \Xi \}$$
+
+\noindent$\wedge$ $\rightarrow$ Represents an empty cell on the tape.\\
+$\Phi \rightarrow$ Represents a minus character; the following number is negative.\\
+$\Psi \rightarrow$ The divider between the 2 multiplicands.\\
+$\Omega \rightarrow$ The divider between the data from the input tape and the additional data in the output tape.\\
+$1 \rightarrow$ Represents the number '$1$', consecutive occurrences of this symbol indicates a number equal to the sum of the occurrences.\\
+$M \rightarrow$ Effectively a pointer to the number being multiplied, this allows the Turing machine to track how far through the multiplication it is.\\
+$\Xi \rightarrow$ Similar to '$M$' but this indicates to the copy machine what symbol on the right hand side of the input is being copied.\\
+
+
+\subsection{Step through}
+An example tape of $2 \times 3$ would be input as in Figure~\ref{table:2by3ex} where the '$\Psi$' symbol separates the multiplicands. As in Figure~\ref{table:2by3ex} the start state is specified as $q_0$, and the starting index on the tape will be '$0$'.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & $ q0 $ &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+\captionof{figure}{Example Input tape for $2 \times 3$}
+\label{table:2by3ex}
+\end{table}
+
+Next the machine will parse the input to check for any negative inputs, if it finds only 1 '$\Phi$' symbol between both inputs it will write a '$\Phi$' symbol at the start of the output and return to index '$0$' (See Figure~\ref{table:negParseEx}), otherwise it will return to index '$0$' (See Figure~\ref{table:noNegParseEx}). An example of 2 negative inputs can be found at Section~\ref{minus2timesminus2}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & $ q13 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+\captionof{figure}{Input parsed no negative, returning to 0}
+\label{table:noNegParseEx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+\captionof{figure}{Input parse, negative found, written output and returning to 0}
+\label{table:negParseEx}
+\end{table}
+
+Now the multiplication part of the process begins. The first multiplicand's first '$1$' is converted to the '$M$' symbol and the machine moves along to begin copying the second multiplicand (See Figure~\ref{table:startMult}).
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & $ q6 $ &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+\captionof{figure}{Begin multiplication}
+\label{table:startMult}
+\end{table}
+
+Once the machine reaches the first '$1$' on the second multiplicand, it begins the copy process by marking the 1 currently being copied with the '$\Xi$' symbol (See Figure~\ref{table:startCopy}). 
+
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+\captionof{figure}{Begin Copy}
+\label{table:startCopy}
+\end{table}
+
+The machine loops over the remaining '$1$' symbols until it reaches either the '$\wedge$' or '$\Omega$', it writes an '$\Omega$' and continues to search for the next occurence of '$\wedge$', once it finds it, it writes a '$1$' (See Figure~\ref{table:copy}) and returns to '$\Xi$'.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
+\end{tabular}
+\\
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+\captionof{figure}{2 tapes: Copy first symbol and return}
+\label{table:copy}
+\end{table}
+
+Now the program loops, until the last '$\Xi$' is replaced by a '$1$', and the last '$M$' is replaced by a '$1$'. At this point the machine returns to the $0$th index and enters the final state: $q_{14}$ (See Figure~\ref{table:copyComplete})
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & $ q14 $ &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+\captionof{figure}{Copy complete, return to index 0}
+\label{table:copyComplete}
+\end{table}
 
 \section{Implementation of Turing machine}
 
-The Language this Turing machine is implemented in is Scala. Scala is a fun language write code in, the object oriented style helps with separation of concerns, while the functional aspects; immutability and the structural sharing from data types such as Scala Vectors saves considerable memory when running tapes for (relatively) large multiplications such as 100*100. These features plus access to the easy to use Java printwriter to produce beautiful tapes as .tex files as an output of my implementation (see the scala object at \path{/implementation/src/main/scala/Machine/TexTapePrinter.scala})
+The Language this Turing machine is implemented in is Scala. Scala is a fun language write code in, the object oriented style helps with separation of concerns, while the functional aspects; immutability and the structural sharing from data types such as Scala Vectors saves considerable memory when running tapes for (relatively) large multiplications such as 100*100. These features plus access to the easy to use Java printwriter to produce beautiful tapes as .tex files as an output of my implementation (see the Scala object at \path{/implementation/src/main/scala/Machine/TexTapePrinter.scala} in the source code) influenced my decision to use Scala.
 
 \section{Tests}
 Tests, including count of tapes printed, time to complete test
@@ -110,14 +258,877 @@ I have included a few tests on the following pages to demonstrate, basic functio
 Tests with tapes included in this document,  \\
 \begin{tabular}{|c|c|c|}
 \hline
-Test name & Time(ms) & Tapes\\ \hline
-$2 \times 2$ & $3$ & $65$ \\ \hline
-$-1 \times 5$ & $4$ & $111$ \\ \hline
+Test name & Time(ns) & Tapes\\ \hline
+$0 \times 0 $ & $300,300$ & $5$ \\ \hline
+$0 \times 1$ & $185,300$ & $7$ \\ \hline
+$-1 \times 2$ & $1,144,000$ & $45$ \\ \hline
+$2 \times 2$ & $3,674,100$ & $65$ \\ \hline
+$-2 \times -2$ & $3,954,900$ & $73$ \\ \hline
 \end{tabular}
 \end{table}
 
 \pagebreak
-\subsection{2 x 2}
+
+\subsection{0 $\times$ 0}
+Number of tapes: 5\\
+Tape execution time: 0ms\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  & $ q0 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 0
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  & $ q13 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 1
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  & $ q11 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 2
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  & $ q11 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 3
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  & $ q14 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 4
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+\pagebreak
+
+\subsection{$0 \times 1$}
+Number of tapes: 7\\
+Tape execution time: 0ms\\
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  & $ q0 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 0
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  & $ q13 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 1
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  & $ q1 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 2
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
+&  & $ q1 $ &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 3
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  & $ q5 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 4
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
+&  & $ q11 $ &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 5
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  & $ q14 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 6
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+
+\subsection{$-1 \times 2$}
+
+Number of tapes: 45\\
+Tape execution time: 0ms\\
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & $ q0 $ &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 0
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & $ q2 $ &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 1
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & $ q2 $ &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 2
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & $ q2 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 3
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q2 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 4
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q2 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 5
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & $ q3 $ &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 6
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 7
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 8
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 9
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & $ q4 $ &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 10
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & $ q4 $ &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 11
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\clearpage
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & $ q4 $ &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 12
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  \\
+&  & $ q4 $ &  &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 13
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & $ q5 $ &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 14
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & $ q5 $ &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 15
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & $ q6 $ &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 16
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 17
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 18
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 19
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 20
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
+&  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 21
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 22
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 23
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 24
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 25
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 26
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 27
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 28
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
+&  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 29
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  \\
+&  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  \\
+\end{tabular}
+\\
+Tape number: 30
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
+&  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 31
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
+&  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 32
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 33
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 34
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
+&  &  &  &  &  &  &  & $ q12 $ &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 35
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
+&  &  &  &  &  &  & $ q10 $ &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 36
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
+&  &  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 37
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 38
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 39
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
+&  &  &  &  & $ q5 $ &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 40
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
+&  &  &  & $ q11 $ &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 41
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & $ q11 $ &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 42
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  \\
+&  & $ q11 $ &  &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 43
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{lllllllllllllll}
+ & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & \\
+\hline
+$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
+\hline
+&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
+&  &  & $ q14 $ &  &  &  &  &  &  &  &  &  &  &  \\
+\end{tabular}
+\\
+Tape number: 44
+\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
+\pagebreak
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{2 $\times$ 2}
 Number of tapes: 65\\
 Tape execution time: 3ms\\
 
@@ -1055,1587 +2066,6 @@ Tape number: 64
 
 
 
-\clearpage
-
-\subsection{-1 x 5}
-Number of tapes: 111\\
-Tape execution time: 4ms\\
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  & $ q0 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 0
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  & $ q2 $ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 1
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  & $ q2 $ &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 2
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  & $ q2 $ &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 3
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  & $ q2 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 4
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q2 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 5
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q2 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 6
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q2 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 7
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q2 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 8
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q3 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 9
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 10
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 11
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 12
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 13
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 14
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  & $ q4 $ &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 15
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  & $ q4 $ &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 16
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  & $ q4 $ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 17
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  & $ q4 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 18
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  & $ q4 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 19
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  & $ q5 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 20
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  & $ q5 $ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 21
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  & $ q6 $ &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 22
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 23
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 24
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 25
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 26
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 27
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 28
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 29
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 30
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 31
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 32
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 33
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 34
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 35
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 36
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 37
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 38
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 39
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 40
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 41
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 42
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 43
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 44
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  \\
-\end{tabular}
-\\
-Tape number: 45
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 46
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 47
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 48
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 49
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 50
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 51
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 52
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 53
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 54
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 55
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 56
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 57
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 58
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  \\
-\end{tabular}
-\\
-Tape number: 59
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  \\
-\end{tabular}
-\\
-Tape number: 60
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  \\
-\end{tabular}
-\\
-Tape number: 61
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 62
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 63
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 64
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 65
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 66
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 67
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 68
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 69
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 70
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 71
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 72
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  \\
-\end{tabular}
-\\
-Tape number: 73
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  \\
-\end{tabular}
-\\
-Tape number: 74
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  \\
-\end{tabular}
-\\
-Tape number: 75
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 76
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 77
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 78
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 79
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 80
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 81
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 82
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 83
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q7 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 84
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 85
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 86
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 87
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 88
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  &  \\
-\end{tabular}
-\\
-Tape number: 89
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q8 $ &  &  \\
-\end{tabular}
-\\
-Tape number: 90
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  \\
-\end{tabular}
-\\
-Tape number: 91
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 92
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 93
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 94
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 95
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 96
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Xi$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q9 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 97
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  &  & $ q12 $ &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 98
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 99
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 100
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 101
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 102
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 103
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 104
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$M$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  & $ q10 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 105
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  &  & $ q5 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 106
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  &  & $ q11 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 107
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  & $ q11 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 108
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  & $ q11 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 109
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllllllllllllll}
- & -2 & -1 & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 & \\
-\hline
-$...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Psi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\Omega$} & \multicolumn{1}{|l|}{$\Phi$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$1$} & \multicolumn{1}{|l|}{$\wedge$} & $...$\\
-\hline
-&  &  & $\uparrow$ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-&  &  & $ q14 $ &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  &  \\
-\end{tabular}
-\\
-Tape number: 110
-\noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
-
-
-
 
 
 
@@ -2669,8 +2099,9 @@ Tape number: 110
 
 
 
-
+\pagebreak
 \subsection{-2 $\times$ -2}
+\label{minus2timesminus2}
 Number of tapes: 73\\
 Tape execution time: 2ms\\
 
@@ -3707,10 +3138,48 @@ $...$ & \multicolumn{1}{|l|}{$\wedge$} & \multicolumn{1}{|l|}{$\wedge$} & \multi
 \\
 Tape number: 72
 \noindent\makebox[\linewidth]{\hdashrule{\textwidth}{1pt}{1pt}}\end{table}
-\clearpage
 
+\pagebreak
+\subsection{Extended Test summary}
+
+The following tests can be generated from the source code.\\
+
+To gain some perspective I have produced a second machine that multiplies in units of 2 instead of 1 called "FasterMult" (See Figure~\ref{image:fastMult}). I have run a couple of tests on each machine to demonstrate the difference in performance between them.
+
+\begin{table}[H]
+\centering
+Tests with tapes not included in this document  \\
+\begin{tabular}{|c|c|c|c|}
+\hline
+Machine & Test name & Time(ms) & Tapes\\ \hline
+
+With Negative Numbers	& $20 \times 28 $ & $13753.4356$ & $332067$ \\ \hline
+Faster Mult & $20 \times 28$ & $6751.9592$ & $166323$ \\ \hline
+With Negative Numbers	& $22 \times 23 $ & $10793.5741$ & $270343$ \\ \hline
+Faster Mult & $22 \times 23$ & $5297.7857$ & $135435$ \\ \hline
+\end{tabular}
+\captionof{figure}{Extended tests}
+\label{table:extendedTests}
+\end{table}
+
+\begin{figure}[H]
+\begin{center}
+  \makebox[\textwidth]{\includegraphics[width=0.9\paperwidth]{faster-mult}}
+\end{center}
+\caption{Turing machine to multiply faster}
+\label{image:fastMult}
+\end{figure}
+\pagebreak
 \section{Efficiency of program}
-comment on the number of computation sequences produced and the time taked to complete each test
+
+From the tests in Figure~\ref{table:extendedTests}  can see that a performance suffers significantly on larger multiplications because the turing machine must iterate through every cell on the tape between it and the place it will write. This gets less efficient as the tape writes bigger and bigger numbers, the time to complete 100x100 for example would take more than 48 hours with this (faster) machine, because the closer to the end of the multiplication it gets the slower it becomes. Although the faster machine performs at nearly twice the speed of the slower one, it still suffers from the same problem.
+
+This method of calculation is extremely inefficient, the speed can be significantly increased by increasing the number of symbols copied in a single pass along the tape, but that can only produce a linear improvement, and vastly increases the complexity, while larger multiplications take exponentially longer and use exponentially more tapes. 
+
+
+
 \section{Power of 3 machine}
-asd
+
+
+
 \end{document}
