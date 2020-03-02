@@ -6,15 +6,21 @@ import scala.math.{max, min}
 
 class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMachine, private val initialIndex: Int = 0){
 
+
   private val emptySymbol = turingMachine.emptySymbol
   private val blankIndeces = initTapeRange(knownTape).toSet.diff((for (x <- knownTape) yield x._1))
   private val tapeBlanks: Set[(Int, Char)] = for (x <- blankIndeces) yield (x, emptySymbol)
 
-  // Set representing the initial tape contents
+  // set data type is used to keep in the spirit of the formal definition of a Turing machine, despite redundencies/inefficiencies.
+  // note. the union of the set representing empty tape cells and the set representing predefined known cells.
+  // the for yield loop converts it into the TapeVal type to more easily transpose into a Vector and sort.
   private val tapeContents: Set[TapeVal] = for (x <- (knownTape union tapeBlanks)) yield TapeVal(x._1, x._2)
 
+  // tape is the representation of tapeContents that the program actually executes
   val tape: Vector[TapeVal] = tapeContents.toVector.sortBy(_.index)
+  // tapeIndex is a reference to the index of the current cell represented by the TapeVal class (can be negative)
   private var tapeIndex = initialIndex
+  // vectorIndex is a reference to the actual index used by the vector datatype
   private var vectorIndex = tape.indexWhere(x => x.index == tapeIndex)
 
   var tapeState: String = turingMachine.initialState
@@ -37,8 +43,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
   val runTime: Long = tapeCollection._4
   val tapeCounter = tapeCollection._5
 
-
-
+  // Executes the turing machine over this tape
   def run(): (scala.collection.immutable.Vector[Vector[TapeVal]], Vector[Int], Vector[String], Long, Int) = {
     val states = new VectorBuilder[String]
     val indexes = new VectorBuilder[Int]
@@ -85,14 +90,20 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
   def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
     vectorIndex = curTape.indexWhere(x => x.index == tapeIndex)
     print("Index: "+vectorIndex.toString+" ")
+
+    // Identify correct transition for this state and symbol
     val transition: Transition = {
-      turingMachine.transitions.find(x => (x.rule.symbol == curTape(vectorIndex).symbol && x.rule.state == tapeState)) match {
+      turingMachine.rules.find(x => (x.rule.symbol == curTape(vectorIndex).symbol && x.rule.state == tapeState)) match {
         case None => throw new Exception(s"No transition exists for this state: ${tapeState} and symbol: ${curTape(vectorIndex).symbol.toString}")
         case Some(s) => s
       }
     }
+
+    // update the state and produce the next tape from the transition
     tapeState = transition.result.state
     val nextTape: Vector[TapeVal] = curTape.updated(vectorIndex, TapeVal(curTape(vectorIndex).index, transition.result.symbol))
+
+    // Move the tape index as defined in transition
     tapeIndex = nextIndex(transition)
     val finalTape = expandTape(nextTape)
     finalTape

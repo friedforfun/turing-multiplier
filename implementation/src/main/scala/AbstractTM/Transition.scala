@@ -6,6 +6,7 @@ class Transition(private val st0 : String, private val sy0 : Char, private val s
   val rule: Rule = new Rule(st0, sy0)
   val result: Result = new Result(st1, sy1, move)
 
+  // subclasses Rule & Result to help clarify what state and what symbol is being accessed
   class Rule(private val st0: String, private val sy0: Char) {
     val state = st0
     val symbol = sy0

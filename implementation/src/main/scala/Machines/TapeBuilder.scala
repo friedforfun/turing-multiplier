@@ -1,7 +1,6 @@
 package Machines
 
 import scala.collection.immutable.VectorBuilder
-import scala.collection.mutable
 
 object TapeBuilder {
   // wedge: 0x22C0 | \wedge
@@ -24,6 +23,8 @@ object TapeBuilder {
     counter = counter + 1
     index
   }
+
+  // produces a tape given 2 integers
   def buildTape(x: Int, y: Int): Set[(Int, Char)]={
     counter = -1
     val setBuild = new VectorBuilder[(Int, Char)]

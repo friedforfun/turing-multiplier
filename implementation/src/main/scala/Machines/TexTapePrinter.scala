@@ -6,31 +6,9 @@ import AbstractTM.{Tape, TapeVal}
 // Print output of tape in latex format
 object TexTapePrinter {
 
-
+  // function to convert Char to latex friendly style
   def symbTex(char: Char): String = {
-    // wedge: 0x22C0 | \wedge
-    val wedge = 0x22C0.toChar
-    // Phi:   0x03A6 | \Phi
-    val phi = 0x03A6.toChar
-    // Psi:   0x03A8 | \Psi
-    val psi = 0x03A8.toChar
-    // Omega: 0x03A9 | \Omega
-    val omega = 0x03A9.toChar
-    // 1:     0x0031| 1
-    // M:     0x004D | M
-    val m = 0x004D.toChar
-    // Xi:    0x039E | \Xi
-    val xi = 0x039E.toChar
 
-    val times = 0x2A09.toChar
-    //val times = 0x03A8.toChar
-    val bot = 0x22A5.toChar
-    val d = 0x0044.toChar
-    val t = 0x0054.toChar
-    val u = 0x0055.toChar
-    val v = 0x0056.toChar
-    val equals = 0x003D.toChar
-    val one = 0x0031.toChar
     char match {
       case '⋀' => "\\wedge"
       case 'Φ' => "\\Phi"
@@ -49,13 +27,15 @@ object TexTapePrinter {
     }
   }
 
-  def tex(fileName: String, tape: Tape, tapesPerPage: Int = 4): Unit = {
+  // print function, reduce tapes per page when tapes longer than windowSize are expected as output
+  def tex(fileName: String, tape: Tape, tapesPerPage: Int = 7): Unit = {
     val coll = tape.tapeCollection._1
     val indexColl = tape.tapeCollection._2
     val stateColl = tape.tapeCollection._3
     val runTime = tape.runTime
     val numberOfTapes = tape.tapeCounter
 
+    // windowSize dictates the length of tape each tabular will display
     val windowSize = 18
     val pw = new PrintWriter(new File(fileName+".tex"), "UTF-8")
     pw.write("\\documentclass{article}\n")
@@ -116,7 +96,7 @@ object TexTapePrinter {
 
         pw.write("\\end{tabular}\n")
       }
-      pw.write(s"\\\\\nTape number: ${x.toString}\n") // matches tape appearance not specific instance of x
+      pw.write(s"\\\\\nTape number: ${x.toString}\n")
       pw.write("\\noindent\\makebox[\\linewidth]{\\hdashrule{\\textwidth}{1pt}{1pt}}")
       pw.write("\\end{table}\n")
 
