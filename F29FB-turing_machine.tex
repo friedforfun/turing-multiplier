@@ -7,6 +7,7 @@
 \usepackage{dashrule}
 \usepackage{float}
 \usepackage{hyperref}
+\usepackage{url}
 
 \hypersetup{ linktoc=all}
 \graphicspath{ {./images/} }
@@ -20,10 +21,13 @@
 
 \section{Turing machine multiplication}
 \subsection{Graph - Multiplication positive and negative numbers}
-
+\begin{figure}[H]
 \begin{center}
-  \makebox[\textwidth]{\includegraphics[width=0.9\paperwidth]{Turing-mult}}
+  \makebox[\textwidth]{\includegraphics[width=0.9\paperwidth]{Turing-neg-mult}}
 \end{center}
+\caption{Turing machine to multiply, accepts negative input}
+\label{image:negMult}
+\end{figure}
 
 \clearpage
 
@@ -59,11 +63,29 @@ M_{mult}(q_{12}, \Phi) &= (q_{12}, \Phi, R) & M_{mult}(q_{13}, 1) &= (q_{1}, 1, 
 M_{mult}(q_{13}, \wedge) &= (q_{11}, \wedge, L)
 \end{align*}
 
+\pagebreak
+
 \section{Discussion of graph}
 \subsection{Logic of graph}
-describe the logic of the graph, why I chose this logical method. consider the correctness.
 
-Initially the Graph determines if either, or both, of the pair of numbers on the existing tape are negative.
+Initially the machine determines if either, or both, of the pair of numbers on the existing tape are negative. In the case that one (and only one) input number is negative it places the symbol representing negative numbers '$\Phi$' just after the symbol separating the result from the input '$\Omega$'. otherwise it leaves the result without such a symbol.
+
+Following this the tape returns to the start index by moving left until it reaches the wedge symbol '$\wedge$', it then moves right until it reaches the first '$1$' which it changes to an '$M$'. '$M$' represents a pointer indicating how many times we copy the second number on the tape. Thus the machine moves along the tape until it reaches the '$\Psi$' symbol, indicating it has reached the second number. 
+
+From this point the machine essentially runs a modified version of copy machine found in lecture 7 (See Figure~\ref{fig:copyMachine}) where states $q_{12}$ (Figure~\ref{image:negMult}) corresponds to $q_0$ and $q_10$ (Figure~\ref{image:negMult}) corresponds to $q_f$. Once the copy finishes it goes back to the '$M$' symbol and moves right 1 space and repeats until the second input number has been copied the same number of times as the value of the first number.
+
+\begin{figure}[H]
+	\makebox[\textwidth]{\includegraphics[width=0.9\paperwidth]{copy_machine}}
+	\caption{Copy machine from Lecture 7}
+	\label{fig:copyMachine}
+\end{figure}
+
+It may be possible to reduce the number of states in the machine  from Figure~\ref{image:negMult}  even further, a reduction in the number of states has already been achieved from the Figure~\ref{fig:copyMachine} Copy Machine as can be observed by comparing the effective functionality of $q_3$ and $q_4$ in Figure~\ref{fig:copyMachine} to $q_9$ in Figure~\ref{image:negMult}.
+
+Reducing the number of symbols is very possible, the machine in question (Figure~\ref{image:negMult}) could be reduced to 3 symbols: $Symbols = \{\wedge, \Phi, 1\}$ \\
+But readability would suffer as a consequence, the extra symbols have little or no effective performance overhead.
+
+The graph of the Turing machine with negative numbers does somewhat lack clarity, in part because some effort has been made to minimize the number of states; a version with some duplicate states might look prettier. Also adding negative number functionality and dealing with corner cases  such as multiply by $0$ required that some slightly difficult to route edges had to be introduced.
 
 \subsection{States \& Symbols}
 Why I chose these states and symbols
@@ -75,7 +97,7 @@ How the graph works, where to start, where you end and dealing with 0, and negat
 
 \section{Implementation of Turing machine}
 
-The Language this Turing machine is implemented in is Scala. To start with Scala is a fun language write code in, the object oriented style helps with separation of concerns, while the functional aspects; immutability and the structural sharing from data types such as Scala Vectors saves considerable memory when running tapes for (relatively) large multiplications such as 100*100.
+The Language this Turing machine is implemented in is Scala. Scala is a fun language write code in, the object oriented style helps with separation of concerns, while the functional aspects; immutability and the structural sharing from data types such as Scala Vectors saves considerable memory when running tapes for (relatively) large multiplications such as 100*100. These features plus access to the easy to use Java printwriter to produce beautiful tapes as .tex files as an output of my implementation (see the scala object at \path{/implementation/src/main/scala/Machine/TexTapePrinter.scala})
 
 \section{Tests}
 Tests, including count of tapes printed, time to complete test
