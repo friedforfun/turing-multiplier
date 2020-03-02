@@ -55,11 +55,11 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
 
     val startTime = System.nanoTime()
 
-    println(latest)
+   // println(latest)
     while (!finish()){
 
       latest = step(latest)
-      println(latest)
+     // println(latest)
       states.addOne(tapeState)
       indexes.addOne(tapeIndex)
       tapes.addOne(latest)
@@ -89,7 +89,7 @@ class Tape(private val knownTape: Set[(Int, Char)], val turingMachine: TuringMac
   // One step on the tape, returns the next tape
   def step(curTape: Vector[TapeVal]): Vector[TapeVal] = {
     vectorIndex = curTape.indexWhere(x => x.index == tapeIndex)
-    print("Index: "+vectorIndex.toString+" ")
+    //print("Index: "+vectorIndex.toString+" ")
 
     // Identify correct transition for this state and symbol
     val transition: Transition = {
